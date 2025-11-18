@@ -5,7 +5,20 @@ Get it by:
 git clone https://git.chalmers.se/magnusos/dat480_project_base.git --recursive
 ```
 
-Below follows the original README.
+## Interfacing the network
+The `networklayer` kernel communicates data using two AXI4-stream interfaces, `nl2sk`(tx) and `sk2nl`(rx). See the *Network Layer kernel* section below and [NetLayers/README.md](NetLayers/README.md) for how they are layed out.
+The important field for you, who only need to look at the payload of incomming packages, is `data`. The `data` field/signal is 64 bytes wide in both of the input and output stream, but as long as you define a stream that is a multiple of this, or which divides it evenly, Vitis will infere a data width converter when connecting the kernels.
+Meaning as long as you define your input stream with a power of two - width, it should work.
+
+[Basic_kernels/src/krnl_s2mm.cpp](Basic_kernels/src/krnl_s2mm.cpp) is a good example for how to define an input stream from the network with some of the side channels as well, like `last`(end of package), and `dest`(source socket), but a more simple interface liek the following should also work:
+```c
+void foo(hls::stream<ap_uint<8>>& input_stream, ... ) {
+  ...
+}
+```
+
+
+## Below follows the original README.
 
 
 # XUP Vitis Network Example (VNx)
